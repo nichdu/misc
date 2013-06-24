@@ -5,22 +5,41 @@ require 'httparty'
 
 # Konfiguration
 max_diff = 1500 # Zeitabstand in Sekunden, in der sich der server gemeldet haben muss
+alive_file = '/home/tjark/alive/alive' # Datei, die bei Server-Meldung aktualisiert wird
+notalive_file = '/home/tjark/alive/notalive' # Datei, um wiederholte Benachrichtigungen zu vermeiden. Skript braucht Schreibrecht auf den Ordner
+boxcar_user = 'mail@mail.com' # Boxcar-Benutzername
+boxcar_password = 'password' # Boxcar-Passwort
+boxcar_title = 'Server-Monitoring' # Titel der Boxcar-Benachrichtigung
+boxcar_name = 'XYZ.' # Name des Servers
 
-modtime = File.mtime('/home/tjark/alive/alive')
+$SETTINGS = { :username => boxcar_user, :password => boxcar_password } # Bitte nicht ändern
+
+# Vergangene Zeit seit der letzten Dateiänderung berechnen
+modtime = File.mtime(alive_file)
 time = Time.now
 diff = (time - modtime).to_i
 
 
-if diff > 1500 && !FileTest.exists?('/home/tjark/alive/notalive')
-    SETTINGS = { :username => 'mail@mail.com', :password => 'password' }
-  
-    NOTIFICATION_URL = 'https://boxcar.io/notifications'
+# Wir prüfen, ob die maximale Zeit bereits abgelaufen ist und nicht bereits benachrichtigt wurde
+if diff > max_diff && !FileTest.exists?(notalive_file)
+    # Benachrichtigung bauen...
+    notification_params = { :notification => { :from_screen_name => boxcar_title, :message => 'Der Server #{boxcar_name} ist nicht mehr aktiv.' } }
+    # ...und herausschicken
+    notificate(notification_params)
+    # Datei erstellen, damit wird wissen, dass wir bereits benachrichtigt haben
+    File.new(notalive_file, 'w').close
+# Wenn die maximale Zeit nicht abgelaufen ist, aber wir vor kurzem benachrichtigt haben...
+elsif diff <= max_diff && FileTest.exists?(notalive_file)
+    # ... löschen wir die Datei, damit wir nächstes mal wieder benachrichtigen
+    File.delete(notalive_file)
+    # Benachrichtigung bauen...
+    notification_params = { :notification => { :from_screen_name => boxcar_title, :message => 'Der Server #{boxcar_name} ist wieder aktiv.' } }
+    # ...und herausschicken
+    notificate(notification_params)
+end
 
-    notification_params = { :notification => { :from_screen_name => 'Server-Monitoring', :message => 'Der Server Bramel ist nicht mehr aktiv.' } }
-    resp = HTTParty.post(NOTIFICATION_URL, :body => notification_params, :basic_auth => SETTINGS)
+# Notifiziert eine übergebene Benachrichtigung
+def notificate(params)
+    resp = HTTParty.post('https://boxcar.io/notifications', :body => params, :basic_auth => $SETTINGS)
     puts resp
-    
-    File.new('/home/tjark/alive/notalive', 'w').close
-elsif diff <= 1500 && FileTest.exists?('/home/tjark/alive/notalive')
-    File.delete('/home/tjark/alive/notalive')
 end
