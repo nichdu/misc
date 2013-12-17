@@ -4,7 +4,7 @@ cd _posts/
 DATE=`date +%Y-%m-%d`
 DATETIME=`date +'%Y-%m-%d %H:%M:%S'`
 TITLE=$1
-TITLENAME=`echo $TITLE | awk '{print tolower($0)}' | sed 'y/aáaàäeéeèiíiìoóoòöuúuùüAÁAÀEÉEÈIÍIÌOÓOÒUÚUÙÜß/aaaaaeeeeiiiiooooouuuuuAAAAEEEEIIIIOOOOUUUUUs/' | sed -e 's/[[:space:]]/-/g'`
+TITLENAME=`echo $TITLE | awk '{print tolower($0)}' | sed 'y/aáaàäeéeèiíiìoóoòöuúuùüß/aaaaaeeeeiiiiooooouuuuus/' | sed -e 's/[[:space:]]/-/g'`
 FILE=$DATE-$TITLENAME.markdown
 touch $FILE
 CONTENT="
