@@ -1,18 +1,5 @@
 #!/bin/bash
 
-# Configuration
-USER="tjark"
-HOST="10.1.5.1"
-PATH="backup-tjark"
-FILENAME="asparagin_80e65011bcb4.sparsebundle"
-BUNDLE_MOUNTPOINT="/Volumes/Tjark_Backup"
-KEYCHAIN_HOSTNAME="lysin._smb._tcp.local"
-
-# It's suggested that you add the following lines to 
-# your sudoers-file (replace USER with your user name)
-# USER ALL = (root) NOPASSWD: /sbin/mount
-# USER ALL = (root) NOPASSWD: /usr/bin/hdiutil
-
 ###############################################################################
 # Copyright 2014 Tjark Saul
 # 
@@ -28,6 +15,20 @@ KEYCHAIN_HOSTNAME="lysin._smb._tcp.local"
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+
+# Configuration
+USER="tjark"
+HOST="10.1.5.1"
+PATH="backup-tjark"
+FILENAME="asparagin_80e65011bcb4.sparsebundle"
+BUNDLE_MOUNTPOINT="/Volumes/Tjark_Backup"
+KEYCHAIN_HOSTNAME="lysin._smb._tcp.local"
+
+# It's suggested that you add the following lines to 
+# your sudoers file (replace USER with your user name)
+# USER ALL = (root) NOPASSWD: /sbin/mount
+# USER ALL = (root) NOPASSWD: /usr/bin/hdiutil
+# if you  don't know what sudoers is, read sudoers(5)
 
 # first of all, let's check if the host is available
 /sbin/ping -c1 $HOST > /dev/null
