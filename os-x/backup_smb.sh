@@ -35,7 +35,7 @@ KEYCHAIN_HOSTNAME="lysin._smb._tcp.local"
 PING_RETURN=$?
 if [ $PING_RETURN -ne 0 ]; then
     echo "Backup host not reachable"
-    exit 0
+    exit 5
 fi
 echo "Backup host is reachable. Continuing."
 
@@ -44,7 +44,7 @@ MOUNTPOINT=`/usr/bin/mktemp -d -q -t backup`
 MP_RET=$?
 if [ $MP_RET -ne 0 ]; then
     echo "Could not create mount point"
-    exit 1
+    exit 6
 fi
 
 # we get the password from the keychain
@@ -61,7 +61,7 @@ fi
 MT_RET=$?
 if [ $MT_RET -ne 0 ]; then
     echo "Could not mount network path"
-    exit 2
+    exit 7
 fi
 
 # next, we mount the sparse bundle
@@ -69,7 +69,7 @@ fi
 HDU_RET=$?
 if [ $HDU_RET -ne 0 ]; then
     echo "Could not mount sparsebundle"
-    exit 2
+    exit 7
 fi
 
 # finally, we try to start the backup
